@@ -1,45 +1,111 @@
+// app/(tabs)/_layout.tsx
+import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { ImageBackground, Text, View } from 'react-native';
+import highlight from '../../assets/images/highlightWhite3.png';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
+const TabIcon =( {focused,icon,title}: any ) => {
+    if (focused) {
+    return (
+      
+      <ImageBackground source={highlight} className='flex w-full flex-1 min-w-[120px] min-h-[62px] mb-3 justify-center items-center' >
+        <FontAwesome name={icon} size={25}color='#DD3333' />
+        <Text className=" mt-1.5 text-[#DD3333] text-sm font-normal text-base ">{title}</Text>
+        
+      </ImageBackground>
+    )
+  } else {
+    return (
+      <View className='size-20 mt-6 justify-center items-center rounded-full overflow-hidden ' >
+        <FontAwesome name={icon} size={23}color='#fff' className=' mb-3' />
+       
+      </View>
+    )
+  }
+  }
+  
+export default function TabsLayout() {
   return (
     <Tabs
+   
+      initialRouteName="index"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
+        tabBarShowLabel:false,
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#fff',
+        tabBarStyle: { 
+            backgroundColor:'#DD3333', 
+            borderRadius: 10,
+            width: '100%',
+            height:'8%',
             position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+
+           
+
+         
+
+            
+
+        },
+        tabBarItemStyle: { 
+            width: '100%',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            
+           
+          
+        },
+      
+        
+      }}
+      
+    >
+      
+      <Tabs.Screen
+        name="calendar"
+      
+        options={{
+          title: 'Calendar',
+          headerShown:false,
+          tabBarIcon: ({focused}) =>   <TabIcon focused={focused}  icon={'calendar'} title ="calendar"/>
+        }}
+      />
+      <Tabs.Screen
+        name="media"
+        options={{
+          title: 'Media',
+          headerShown:false,
+          tabBarIcon: ({focused}) =>   <TabIcon focused={focused}  icon={'play'} title ="Media"/>
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          headerShown:false,
+          tabBarIcon: ({focused}) =>   <TabIcon focused={focused}  icon={'home'} title ="home"/>
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="articles"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Articles',
+          headerShown:false,
+          tabBarIcon: ({focused}) =>   <TabIcon focused={focused}  icon={'file-text'} title ="Articles"/>
+        }}
+      />
+      <Tabs.Screen
+        name="donate"
+        options={{
+          title: 'Donate',
+          headerShown:false,
+          tabBarIcon: ({focused}) =>   <TabIcon focused={focused}  icon={'heart'} title ="Donate"/>
         }}
       />
     </Tabs>
   );
 }
+
