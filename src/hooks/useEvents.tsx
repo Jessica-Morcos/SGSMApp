@@ -15,7 +15,7 @@ interface EventType {
   description: string;
 }
 
-export function useEvents() {
+export  function useEvents() {
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(false);
 

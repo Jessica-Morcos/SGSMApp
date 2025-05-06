@@ -10,9 +10,9 @@ const TabIcon =( {focused,icon,title}: any ) => {
     if (focused) {
     return (
       
-      <ImageBackground source={highlight} className='flex w-full flex-1 min-w-[120px] min-h-[62px] mb-3 justify-center items-center' >
+      <ImageBackground source={highlight} className='flex w-full flex-1 min-w-[100px] min-h-[50px]  justify-center items-center ' >
         <FontAwesome name={icon} size={25}color='#DD3333' />
-        <Text className=" mt-1.5 text-[#DD3333] text-sm font-normal text-base ">{title}</Text>
+        <Text className=" mt-1.5 mb-3 text-primary text-sm font-normal text-base ">{title}</Text>
         
       </ImageBackground>
     )
@@ -105,6 +105,8 @@ export default function TabsLayout() {
           tabBarIcon: ({focused}) =>   <TabIcon focused={focused}  icon={'heart'} title ="Donate"/>
         }}
       />
+     
+    
     </Tabs>
   );
 }

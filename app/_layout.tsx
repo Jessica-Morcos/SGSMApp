@@ -5,14 +5,25 @@ import './globals.css';
 export default function RootLayout() {
   return (
     <Stack
+      initialRouteName="(tabs)"
       screenOptions={{
-        headerShown: false, // ← disables that “(tabs)” bar (and any other Stack headers)
+        headerShown: false, 
       }}
     >
-      {/* this will render the (tabs) group */}
-      <Stack.Screen name="(tabs)" />
+     <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false }}
+      />
 
-  
+      
+      <Stack.Screen
+        name="announcements/index"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="announcements/[id]"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

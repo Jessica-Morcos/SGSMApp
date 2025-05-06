@@ -3,9 +3,15 @@ module.exports = {
   presets: [require("nativewind/preset")],
   content: [  "./App.{js,jsx,ts,tsx}",
     "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}"],
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}", ],
+  darkMode: "media",
   theme: {
     extend: {
+      fontSize: {
+        '8xl': '80px',
+        '9xl': '96px',
+      },
       colors: {
         primary: "#DD3333",
         accent: "#AB8BFF",

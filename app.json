@@ -8,6 +8,7 @@
     "scheme": "sgsm",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    
     "ios": {
       "supportsTablet": true
     },
@@ -38,5 +39,6 @@
     "experiments": {
       "typedRoutes": true
     }
+   
   }
 }
