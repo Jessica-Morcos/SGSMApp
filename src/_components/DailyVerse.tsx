@@ -10,7 +10,7 @@ const DATE_KEY    = "dailyVerseDate";
 const TTL_MS      = 1000 * 60 * 60;
 
 // --- API.Bible config ---
-const API_KEY    = process.env.API_BIBLE_KEY || "";
+const API_KEY    = process.env.EXPO_PUBLIC_BIBLE_API_KEY || "";
 const BIBLE_ID   = "685d1470fe4d5c3b-01";
 const SEARCH_QUERY = "strength";
 const SEARCH_URL = `https://api.scripture.api.bible/v1/bibles/`
@@ -25,6 +25,7 @@ export default function DailyVerse() {
   const [lines, setLines]         = useState<string[]>([]);
   const [reference, setReference] = useState<string | null>(null);
   const [loading, setLoading]     = useState(true);
+
 
   useEffect(() => {
     (async () => {

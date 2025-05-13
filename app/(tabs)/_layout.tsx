@@ -12,7 +12,7 @@ const TabIcon =( {focused,icon,title}: any ) => {
       
       <ImageBackground source={highlight} className='flex w-full flex-1 min-w-[100px] min-h-[50px]  justify-center items-center ' >
         <FontAwesome name={icon} size={25}color='#DD3333' />
-        <Text className=" mt-1.5 mb-3 text-primary text-sm font-normal text-base ">{title}</Text>
+        <Text className=" mt-1.5 mb-3 text-primary text-xs font-medium ">{title}</Text>
         
       </ImageBackground>
     )
@@ -40,6 +40,7 @@ export default function TabsLayout() {
             borderRadius: 10,
             width: '100%',
             height:'8%',
+            paddingTop: 4,
             position: 'absolute',
 
            

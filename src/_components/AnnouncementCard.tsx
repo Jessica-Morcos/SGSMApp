@@ -1,4 +1,4 @@
-// src/components/AnnouncementCard.tsx
+
 import React from "react";
 import {
     GestureResponderEvent,
@@ -14,7 +14,7 @@ type Props = {
   excerpt: string;
   imageUrl?: string;
   onPress: (e: GestureResponderEvent) => void;
-  borderColor?: string; // e.g. "border-blue-300" or "border-red-300"
+  borderColor?: string; 
 };
 
 export default function AnnouncementCard({
