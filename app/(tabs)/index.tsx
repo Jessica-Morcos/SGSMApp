@@ -10,19 +10,25 @@ import { useAnnouncements } from "@/src/hooks/useAnnouncements";
 import { useEvents } from "@/src/hooks/useEvents";
 import headerIMG from "../../assets/images/HomeHeader.png";
 
+function toLocalDateKey(d: Date) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 export default function Index() {
+  const { events, loading } = useEvents()
+  const today = new Date()
+  const todayKey = toLocalDateKey(today)
+  const todaysEvents = events.filter(evt => toLocalDateKey(evt.start) === todayKey)
+  const fmt = (d: Date) =>
+    d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })
+
   const router = useRouter();
   const announcements = useAnnouncements(3);
-  const { events } = useEvents();
+  
 
-  const todayKey = new Date().toISOString().split('T')[0];
-  const todaysEvents = events.filter(e => e.start.toISOString().startsWith(todayKey));
-  const fmt = (date: Date) =>
-    date.toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
+ 
 
   return (
     <>
@@ -54,7 +60,7 @@ export default function Index() {
             </View>
           </View>
 
-          <TodayHeader date={new Date()} events={todaysEvents} fmtTime={fmt} />
+          <TodayHeader date={today} events={todaysEvents} fmtTime={fmt} />
 
           <View className="px-4 mt-2">
             <Text className="text-2xl font-bold">Announcements</Text>

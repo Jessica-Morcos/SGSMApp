@@ -56,7 +56,7 @@ export  function useEvents() {
     }
   }, [loadCache]);
 
-  // 3) Decide whether to fetch or load cache
+  
   const refresh = useCallback(async () => {
     const state = await NetInfo.fetch();
     if (state.isConnected) {
