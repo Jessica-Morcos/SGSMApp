@@ -1,48 +1,35 @@
-// src/hooks/useArticles.ts
-import { useEffect, useState } from "react";
+// hooks/useArticles.ts
+import { useEffect, useState } from 'react';
 
-interface Project {
+export interface WPPost {
   id: number;
   date: string;
   title: { rendered: string };
   content: { rendered: string };
   _embedded?: {
-    "wp:featuredmedia"?: Array<{ source_url: string }>;
+    'wp:featuredmedia'?: Array<{ source_url: string }>;
+    'wp:term'?: Array<Array<{ id: number; name: string; slug: string }>>;
   };
+  link: string;
+  project_category?: number[];
 }
 
-export function useArticles(perPage: number = 20) {
-  const [articles, setArticles] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export function useArticles(perPage = 100) {
+  const [articles, setArticles] = useState<WPPost[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-
     fetch(
       `https://stgeorge-stmercurius.com/wp-json/wp/v2/project?per_page=${perPage}&_embed`
     )
-      .then((res) => {
-        if (!res.ok) throw new Error(res.statusText);
+      .then(res => {
+        if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data: Project[]) => {
-        if (!cancelled) {
-          setArticles(data);
-          setError(null);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
+      .then((data: WPPost[]) => setArticles(data))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, [perPage]);
 
   return { articles, loading, error };

@@ -30,13 +30,13 @@ export default function AnnouncementDetail() {
   useEffect(() => {
     async function load() {
       try {
-        // 1) fetch the post with embeds
+      
         const p = await fetch(
           `https://stgeorge-stmercurius.com/wp-json/wp/v2/posts/${id}?_embed`
         ).then((r) => r.json());
         setPost(p);
 
-        // 2) sanitize the HTML:
+  
         let html = p.content.rendered as string;
         html = html
           // remove any WP “figure” blocks
@@ -69,12 +69,11 @@ export default function AnnouncementDetail() {
     load();
   }, [id]);
 
-  // — loading guard —
   if (!post) {
     return <Text className="p-4">Loading post…</Text>;
   }
 
-  // — featured image if any —
+
   const featuredUrl =
     post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ?? null;
   const featuredDetails =
@@ -141,7 +140,7 @@ export default function AnnouncementDetail() {
             <Text className="p-4">Preparing content…</Text>
           )}
 
-          {/* GALLERY ATTACHMENTS */}
+     
           {gallery.map((img) => {
             const md = img.media_details;
             return (

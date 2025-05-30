@@ -4,7 +4,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 
 interface BibleVerse { reference: string; text: string; }
 
-// storage + TTL
+
 const STORAGE_KEY = "dailyVerseCache";
 const DATE_KEY    = "dailyVerseDate";
 const TTL_MS      = 1000 * 60 * 60;
