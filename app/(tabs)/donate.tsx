@@ -10,63 +10,50 @@ import {
 } from 'react-native';
 import WebView from 'react-native-webview';
 
-const PAYPAL_DONATE_URL =
-  'https://www.paypal.com/donate?token=vtSd-ZGHfn4hMktGpydUfjxumxi-czpA8iGVqcgr0BHE4x0U1TjWNyD-E5iwo5P6WENJOrAEFImkrnii';
+// Load and sanitize the PayPal URL from env
+const rawUrl = process.env.EXPO_PUBLIC_PAYPAL_DONATE_URL || '';
+const PAYPAL_DONATE_URL = rawUrl.replace(/;$/, '').trim();
 
 const Donate: React.FC = () => {
   const [showWebView, setShowWebView] = useState(false);
-  const [loadingError, setLoadingError] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+
 
   const onBack = () => setShowWebView(false);
   const onDonatePress = () => {
-    setLoadingError(false);
+    setHasError(false);
     setShowWebView(true);
   };
-  
-  const onWebError = (event: any) => {
-    console.warn('WebView failed to load:', event.nativeEvent);
-    setLoadingError(true);
-  };
+
+  const onWebError = () => setHasError(true);
+
 
   const Header = (
-    <View className="flex-row items-center bg-white p-4 shadow">
-      <TouchableOpacity onPress={onBack} className="p-2">
-        <Text className="text-blue-600 text-lg">Back</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: '#fff' }}>
+      <TouchableOpacity onPress={onBack} style={{ padding: 8 }}>
+        <Text style={{ color: '#0070ba', fontSize: 16 }}>Back</Text>
       </TouchableOpacity>
-      <Text className="flex-1 text-center text-xl font-semibold">Donate</Text>
-      <View className="w-12" />
+      <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '600' }}>Donate</Text>
+      <View style={{ width: 32 }} />
     </View>
   );
 
   if (showWebView) {
-    // Fallback UI on WebView error
-    if (loadingError) {
+    if (hasError) {
       return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', padding: 24 }}>
+        <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
           {Header}
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text className="mb-4 text-center">
-              Oops! The donation page couldn't load.
-            </Text>
-            <TouchableOpacity
-              className="bg-blue-600 px-6 py-3 rounded-full mb-3"
-              onPress={() => Linking.openURL(PAYPAL_DONATE_URL)}
-            >
-              <Text className="text-white">Open in Browser</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="bg-gray-200 px-6 py-3 rounded-full"
-              onPress={() => {
-                setLoadingError(false);
-              }}
-            >
-              <Text>Try Again</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={{ marginBottom: 16, textAlign: 'center' }}>Failed to load donation page.</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(PAYPAL_DONATE_URL)} style={{ marginBottom: 12, padding: 12, backgroundColor: '#0070ba', borderRadius: 6 }}>
+            <Text style={{ color: '#fff' }}>Open in Browser</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setHasError(false)} style={{ padding: 12, backgroundColor: '#eee', borderRadius: 6 }}>
+            <Text>Retry</Text>
+          </TouchableOpacity>
         </SafeAreaView>
       );
     }
-
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         {Header}
@@ -75,10 +62,11 @@ const Donate: React.FC = () => {
           originWhitelist={['https://*', 'http://*', 'about:*']}
           startInLoadingState
           onError={onWebError}
-          onLoadStart={() => console.log('WebView load started')}
-          onLoadEnd={() => console.log('WebView load ended')}
+        
+          userAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15A372 Safari/604.1"
+          sharedCookiesEnabled={true}
           renderLoading={() => (
-            <View className="flex-1 justify-center items-center">
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <ActivityIndicator />
             </View>
           )}
@@ -88,15 +76,12 @@ const Donate: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-      <Text className="text-2xl font-bold mb-4 text-center">
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: '#fff' }}>
+      <Text style={{ fontSize: 24, fontWeight: '700', marginBottom: 16, textAlign: 'center' }}>
         Support St. George &amp; St. Mercurius
       </Text>
-      <TouchableOpacity
-        className="bg-blue-600 px-8 py-3 rounded-full"
-        onPress={onDonatePress}
-      >
-        <Text className="text-white text-lg">Donate with PayPal</Text>
+      <TouchableOpacity onPress={onDonatePress} style={{ paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#DD3333', borderRadius: 50}}>
+        <Text style={{ color: '#fff', fontSize: 16 }}>Donate with PayPal</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
