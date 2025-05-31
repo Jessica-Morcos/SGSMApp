@@ -32,7 +32,7 @@ const Donate: React.FC = () => {
   const Header = (
     <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: '#fff' }}>
       <TouchableOpacity onPress={onBack} style={{ padding: 8 }}>
-        <Text style={{ color: '#0070ba', fontSize: 16 }}>Back</Text>
+        <Text style={{ color: '#DD3333', fontSize: 18 }}>Back</Text>
       </TouchableOpacity>
       <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '600' }}>Donate</Text>
       <View style={{ width: 32 }} />
@@ -55,14 +55,15 @@ const Donate: React.FC = () => {
       );
     }
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} >
         {Header}
         <WebView
+          style={{  marginBottom:20 }}
           source={{ uri: PAYPAL_DONATE_URL }}
           originWhitelist={['https://*', 'http://*', 'about:*']}
           startInLoadingState
           onError={onWebError}
-        
+          
           userAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15A372 Safari/604.1"
           sharedCookiesEnabled={true}
           renderLoading={() => (

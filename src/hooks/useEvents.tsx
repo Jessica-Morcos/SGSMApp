@@ -1,6 +1,6 @@
 // src/hooks/useEvents.ts
 import NetInfo from '@react-native-community/netinfo';
-import { decode } from 'html-entities'; // ← import the decoder
+import { decode } from 'html-entities';
 import { useCallback, useEffect, useState } from 'react';
 
 export interface EventType {
@@ -28,7 +28,7 @@ export function useEvents() {
     }
 
     const now    = Date.now()
-    const yearMs = 365 * 24 * 60 * 60 * 1000
+    const yearMs = (365 * 24 * 60 * 60 * 1000)/2
     const start  = toIsoNoMs(new Date(now - yearMs))
     const end    = toIsoNoMs(new Date(now + yearMs))
 
