@@ -12,11 +12,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import AnnouncementCard from "@/src/_components/AnnouncementCard";
-import DailyVerse from "@/src/_components/DailyVerse";
-import { TodayHeader } from "@/src/_components/TodayHeader";
-import { useAnnouncements } from "@/src/hooks/useAnnouncements";
-import { useEvents } from "@/src/hooks/useEvents";
+import AnnouncementCard from "@/_components/AnnouncementCard";
+import DailyVerse from "@/_components/DailyVerse";
+import { TodayHeader } from "@/_components/TodayHeader";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { useEvents } from "@/hooks/useEvents";
 import headerIMG from "../../assets/images/HomeHeader.png";
 
 function toLocalDateKey(d: Date) {

@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import MediaCard from '@/src/_components/MediaCard';
-import { useMedia } from '@/src/hooks/useMedia';
+import MediaCard from '@/_components/MediaCard';
+import { useMedia } from '@/hooks/useMedia';
 
 export default function MediaList() {
   const { media, loading, error } = useMedia(100);
@@ -15,7 +15,7 @@ export default function MediaList() {
   if (loading) return <ActivityIndicator className="flex-1 justify-center" />;
   if (error)   return <Text className="flex-1 text-center">Failed to load.</Text>;
 
-  // split Hymns vs Sermons based on term names
+  
   const hymns = media.filter(m =>
     m._embedded?.['wp:term']?.flat().some((t:any) => t.name === 'Hymns')
   );
@@ -23,7 +23,7 @@ export default function MediaList() {
     m._embedded?.['wp:term']?.flat().some((t:any) => t.name === 'Sermons')
   );
 
-  // sort by date
+
   const sortByDate = (arr:any[], oldest:boolean) =>
     [...arr].sort((a,b)=>
       oldest
@@ -59,7 +59,7 @@ export default function MediaList() {
           />
         ))}
 
-        {/* Sermons header */}
+       
         <View className="flex-row justify-between items-center mt-6 mb-3">
           <Text className="text-xl font-bold">Sermons</Text>
           <TouchableOpacity

@@ -1,6 +1,6 @@
 
-import AnnouncementCard from "@/src/_components/AnnouncementCard";
-import { useAnnouncements } from "@/src/hooks/useAnnouncements";
+import AnnouncementCard from "@/_components/AnnouncementCard";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView } from "react-native";

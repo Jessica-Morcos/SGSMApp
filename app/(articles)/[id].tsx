@@ -1,5 +1,5 @@
 // app/articles/[id].tsx
-import { WPPost } from '@/src/hooks/useArticles';
+import { WPPost } from '@/hooks/useArticles';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { decode } from 'html-entities';
 import React, { useEffect, useState } from 'react';

@@ -1,5 +1,5 @@
 // app/(tabs)/calendar.tsx
-import { useEvents } from '@/src/hooks/useEvents'
+import { useEvents } from '@/hooks/useEvents'
 import React, { useMemo, useState } from 'react'
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native'
 import { Calendar, CalendarProps, DateData } from 'react-native-calendars'

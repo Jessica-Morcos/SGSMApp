@@ -1,6 +1,6 @@
 // app/(tabs)/Articles.tsx
-import ArticleCard from '@/src/_components/ArticleCard';
-import { useArticles } from '@/src/hooks/useArticles';
+import ArticleCard from '@/_components/ArticleCard';
+import { useArticles } from '@/hooks/useArticles';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import {
