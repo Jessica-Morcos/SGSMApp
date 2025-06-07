@@ -1,5 +1,6 @@
-// hooks/useArticles.ts
-import { useEffect, useState } from 'react';
+// src/hooks/useArticles.ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface WPPost {
   id: number;
@@ -14,23 +15,50 @@ export interface WPPost {
   project_category?: number[];
 }
 
+const STORAGE_KEY = 'cached_wp_articles';
+
 export function useArticles(perPage = 100) {
   const [articles, setArticles] = useState<WPPost[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
+
+  const loadFromStorage = useCallback(async () => {
+    try {
+      const json = await AsyncStorage.getItem(STORAGE_KEY);
+      if (json) setArticles(JSON.parse(json));
+    } catch {}
+  }, []);
+
+  const saveToStorage = useCallback(async (list: WPPost[]) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    } catch {}
+  }, []);
+
+  const fetchArticles = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const url = `https://stgeorge-stmercurius.com/wp-json/wp/v2/project?per_page=${perPage}&_embed`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const data: WPPost[] = await res.json();
+      setArticles(data);
+      await saveToStorage(data);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [perPage, saveToStorage]);
 
   useEffect(() => {
-    fetch(
-      `https://stgeorge-stmercurius.com/wp-json/wp/v2/project?per_page=${perPage}&_embed`
-    )
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data: WPPost[]) => setArticles(data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [perPage]);
+    (async () => {
+      await loadFromStorage();
+      if (articles.length > 0) setLoading(false);
+      fetchArticles();
+    })();
+  }, [loadFromStorage, fetchArticles]);
 
   return { articles, loading, error };
 }

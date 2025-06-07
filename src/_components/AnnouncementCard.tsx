@@ -1,11 +1,11 @@
 
 import React from "react";
 import {
-    GestureResponderEvent,
-    Image,
-    Text,
-    TouchableOpacity,
-    View,
+  GestureResponderEvent,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 type Props = {

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import WebView from 'react-native-webview';
 
-// Load and sanitize the PayPal URL from env
+
 const rawUrl = process.env.EXPO_PUBLIC_PAYPAL_DONATE_URL || '';
 const PAYPAL_DONATE_URL = rawUrl.replace(/;$/, '').trim();
 

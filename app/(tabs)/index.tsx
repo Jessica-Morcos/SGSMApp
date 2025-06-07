@@ -1,6 +1,4 @@
-// app/(tabs)/index.tsx
 import { useFocusEffect, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useRef } from "react";
 import {
   Animated,
@@ -56,17 +54,15 @@ export default function HomeTab() {
 
   return (
     <Animated.View style={[styles.container, { opacity }]}>
-      {/* Top red safe area */}
-      <SafeAreaView className="bg-primary">
-        <StatusBar style="light" backgroundColor="#DD3333" />
+      <SafeAreaView edges={["top"]} className="bg-primary">
+        
       </SafeAreaView>
 
-      {/* Main white content area */}
       <SafeAreaView className="flex-1 bg-white" edges={['bottom', 'left', 'right']}>
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
           <Image
             source={headerIMG}
-            className="w-full h-[18rem] mb-5"
+            className="w-full h-[19rem] mb-5"
             resizeMode="stretch"
           />
 

@@ -5,7 +5,7 @@ export default {
   expo: {
     name: "SGSM",
     slug: "SGSM",
-    version: "1.0.2",
+    version: "1.0.6",
     orientation: "portrait",
     icon: "./assets/images/app-icon.png",
     scheme: "sgsm",
@@ -14,10 +14,11 @@ export default {
 
     ios: {
       supportsTablet: true,
-      buildNumber: "3", 
+      buildNumber: "6", 
       bundleIdentifier: "com.jessicamorcos.SGSM",
       infoPlist: {
-        ITSAppUsesNonExemptEncryption: false
+        ITSAppUsesNonExemptEncryption: false,
+        UIBackgroundModes: ["audio"]
       }
     },
 

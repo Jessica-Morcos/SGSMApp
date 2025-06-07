@@ -12,12 +12,8 @@ interface Props {
 }
 
 export default function ArticleCard({ title, date, imageUrl, onPress }: Props) {
- 
   const raw = title.replace(/<[^>]+>/g, '');
- 
   const cleanTitle = decode(raw);
-
- 
   const isArabic = /[\u0600-\u06FF]/.test(cleanTitle);
 
   return (
