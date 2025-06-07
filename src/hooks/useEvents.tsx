@@ -61,7 +61,6 @@ export function useEvents() {
 
     const net = await NetInfo.fetch();
     if (!net.isConnected) {
-     
       setLoading(false);
       return;
     }
@@ -72,42 +71,57 @@ export function useEvents() {
     const end    = toIsoNoMs(new Date(now + yearMs));
 
     const perPage = 100;
-    let page      = 1;
-    let allEvents: EventType[] = [];
+    const baseURL =
+      'https://stgeorge-stmercurius.com/wp-json/tribe/events/v1/events';
 
     try {
-      while (true) {
-        const url = new URL(
-          'https://stgeorge-stmercurius.com/wp-json/tribe/events/v1/events'
-        );
-        url.searchParams.set('start_date', start);
-        url.searchParams.set('end_date',   end);
-        url.searchParams.set('per_page',   String(perPage));
-        url.searchParams.set('page',       String(page));
+      const firstURL = new URL(baseURL);
+      firstURL.searchParams.set('start_date', start);
+      firstURL.searchParams.set('end_date', end);
+      firstURL.searchParams.set('per_page', String(perPage));
+      firstURL.searchParams.set('page', '1');
 
-        const res = await fetch(url.toString());
-        if (!res.ok) break;
+      const firstRes = await fetch(firstURL.toString());
+      if (!firstRes.ok) throw new Error('Failed to fetch events');
+      const firstJson = await firstRes.json();
 
-        const json = await res.json();
-        const batch: EventType[] = (json.events || []).map((e: any) => ({
-          id:    String(e.id),
-          title: decode(e.title),
-          start: new Date(e.start_date),
-          end:   new Date(e.end_date),
-        }));
+      let allEvents: EventType[] = (firstJson.events || []).map((e: any) => ({
+        id: String(e.id),
+        title: decode(e.title),
+        start: new Date(e.start_date),
+        end: new Date(e.end_date),
+      }));
 
-        allEvents = allEvents.concat(batch);
+      const totalPages = parseInt(firstJson.total_pages, 10) || 1;
 
-        const totalPages = parseInt(json.total_pages, 10) || 1;
-        if (page >= totalPages) break;
-        page += 1;
+      if (totalPages > 1) {
+        const fetches = [] as Promise<Response>[];
+        for (let page = 2; page <= totalPages; page++) {
+          const url = new URL(baseURL);
+          url.searchParams.set('start_date', start);
+          url.searchParams.set('end_date', end);
+          url.searchParams.set('per_page', String(perPage));
+          url.searchParams.set('page', String(page));
+          fetches.push(fetch(url.toString()));
+        }
+
+        const results = await Promise.all(fetches);
+        const jsons = await Promise.all(results.map(r => r.json()));
+        jsons.forEach(json => {
+          const batch: EventType[] = (json.events || []).map((e: any) => ({
+            id: String(e.id),
+            title: decode(e.title),
+            start: new Date(e.start_date),
+            end: new Date(e.end_date),
+          }));
+          allEvents = allEvents.concat(batch);
+        });
       }
 
       setEvents(allEvents);
       await saveToStorage(allEvents);
     } catch (err) {
       console.warn('Failed to fetch Tribe events', err);
-   
     } finally {
       setLoading(false);
     }
