@@ -1,5 +1,3 @@
-// app/(tabs)/calendar.tsx
-
 import { EventType, useEvents } from '@/hooks/useEvents';
 import * as ExpoCalendar from 'expo-calendar';
 import React, { useMemo, useState } from 'react';
@@ -26,7 +24,6 @@ const formatTime = (d: Date) =>
 
 export default function CalendarScreen() {
   const { events, loading } = useEvents();
-
   const [displayMonth, setDisplayMonth] = useState(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1)
   );
@@ -42,11 +39,52 @@ export default function CalendarScreen() {
     return map;
   }, [events]);
 
+  const calendarEventExists = async (
+    calendarId: string,
+    e: EventType
+  ): Promise<boolean> => {
+    try {
+      const existing = await ExpoCalendar.getEventsAsync(
+        [calendarId],
+        new Date(e.start.getTime() - 60 * 1000),
+        new Date(e.end.getTime() + 60 * 1000)
+      );
+      return existing.some(
+        ev =>
+          ev.title === e.title &&
+          new Date(ev.startDate).getTime() === e.start.getTime()
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  const askSeriesChoice = (
+    count: number,
+    title: string,
+    lastDate: Date
+  ): Promise<'single' | 'series' | 'cancel'> =>
+    new Promise(resolve => {
+      Alert.alert(
+        'Add series?',
+        `There are ${count} upcoming occurrences of "${title}" until ${lastDate.toLocaleDateString()}.`,
+        [
+          { text: 'Only this', onPress: () => resolve('single') },
+          { text: `All ${count}`, onPress: () => resolve('series') },
+          { text: 'Cancel', style: 'cancel', onPress: () => resolve('cancel') },
+        ],
+        { cancelable: true }
+      );
+    });
+
   const addEventToCalendar = async (evt: EventType) => {
     try {
       const { status } = await ExpoCalendar.requestCalendarPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission required', 'Calendar permission is needed to add events.');
+        Alert.alert(
+          'Permission required',
+          'Calendar permission is needed to add events.'
+        );
         return;
       }
 
@@ -59,14 +97,47 @@ export default function CalendarScreen() {
         return;
       }
 
-      await ExpoCalendar.createEventAsync(writable.id, {
-        title: evt.title,
-        startDate: evt.start,
-        endDate: evt.end,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
+      const MAX_SERIES_SPAN_DAYS = 180;
+      const related = events
+        .filter(
+          e =>
+            e.title === evt.title &&
+            e.start >= evt.start &&
+            e.start.getTime() - evt.start.getTime() <=
+              MAX_SERIES_SPAN_DAYS * 24 * 60 * 60 * 1000
+        )
+        .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-      Alert.alert('Added', 'Event added to your calendar');
+      let targets: EventType[] = [evt];
+      if (related.length > 1) {
+        const last = related[related.length - 1].start;
+        const choice = await askSeriesChoice(
+          related.length,
+          evt.title,
+          last
+        );
+        if (choice === 'cancel') return;
+        if (choice === 'series') targets = related;
+      }
+
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      for (const e of targets) {
+        const exists = await calendarEventExists(writable.id, e);
+        if (exists) continue;
+        await ExpoCalendar.createEventAsync(writable.id, {
+          title: e.title,
+          startDate: e.start,
+          endDate: e.end,
+          timeZone: tz,
+        });
+      }
+
+      Alert.alert(
+        'Added',
+        targets.length > 1
+          ? 'Events added to your calendar'
+          : 'Event added to your calendar'
+      );
     } catch (err) {
       console.warn('Failed to add event', err);
       Alert.alert('Error', 'Could not add event to calendar');
@@ -98,9 +169,10 @@ export default function CalendarScreen() {
   const todaysEvents = eventsByDate[selectedDate] || [];
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView>
-        <View>
+    <SafeAreaView className="flex-1 bg-primary">
+      <ScrollView contentContainerStyle={{ padding: 16 }} className='bg-white'>
+      
+          <View className="overflow-hidden rounded-2xl shadow-md">
           <Calendar
             current={toLocalDateKey(displayMonth)}
             onMonthChange={date => setDisplayMonth(new Date(date.year, date.month - 1, 1))}
@@ -137,9 +209,9 @@ export default function CalendarScreen() {
                   <Text className="font-medium">{evt.title}</Text>
                 </View>
                 <TouchableOpacity
-                onPress={() => addEventToCalendar(evt)}
-                className="bg-red-600 px-3 py-1 rounded"
-              >
+                  onPress={() => addEventToCalendar(evt)}
+                  className="bg-red-600 px-4 py-1 rounded"
+                >
                   <Text className="text-white text-sm">Add</Text>
                 </TouchableOpacity>
               </View>
