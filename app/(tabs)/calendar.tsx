@@ -1,8 +1,16 @@
 // app/(tabs)/calendar.tsx
 
 import { EventType, useEvents } from '@/hooks/useEvents';
+import * as ExpoCalendar from 'expo-calendar';
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Calendar, CalendarProps, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -34,6 +42,37 @@ export default function CalendarScreen() {
     return map;
   }, [events]);
 
+  const addEventToCalendar = async (evt: EventType) => {
+    try {
+      const { status } = await ExpoCalendar.requestCalendarPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'Calendar permission is needed to add events.');
+        return;
+      }
+
+      const calendars = await ExpoCalendar.getCalendarsAsync(
+        ExpoCalendar.EntityTypes.EVENT
+      );
+      const writable = calendars.find(c => c.allowsModifications);
+      if (!writable) {
+        Alert.alert('Error', 'No writable calendar found');
+        return;
+      }
+
+      await ExpoCalendar.createEventAsync(writable.id, {
+        title: evt.title,
+        startDate: evt.start,
+        endDate: evt.end,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+
+      Alert.alert('Added', 'Event added to your calendar');
+    } catch (err) {
+      console.warn('Failed to add event', err);
+      Alert.alert('Error', 'Could not add event to calendar');
+    }
+  };
+
   const markedDates: CalendarProps['markedDates'] = useMemo(() => {
     const m: CalendarProps['markedDates'] = {};
     Object.keys(eventsByDate).forEach(day => {
@@ -49,7 +88,6 @@ export default function CalendarScreen() {
   }, [eventsByDate, selectedDate]);
 
   if (loading && events.length === 0) {
-    // Only show spinner if we have neither cache nor fresh data
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#dc2626" />
@@ -60,21 +98,12 @@ export default function CalendarScreen() {
   const todaysEvents = eventsByDate[selectedDate] || [];
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
-      <ScrollView contentContainerStyle={{ padding: 16 }} className="bg-white">
-        <Text className="text-center text-2xl font-bold mb-4">
-          {displayMonth.toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric',
-          })}
-        </Text>
-
-        <View className="overflow-hidden rounded-2xl shadow-md">
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView>
+        <View>
           <Calendar
-            current={displayMonth.toISOString().split('T')[0]}
-            onMonthChange={m =>
-              setDisplayMonth(new Date(m.year, m.month - 1, 1))
-            }
+            current={toLocalDateKey(displayMonth)}
+            onMonthChange={date => setDisplayMonth(new Date(date.year, date.month - 1, 1))}
             markingType="dot"
             markedDates={markedDates}
             onDayPress={(day: DateData) => setSelectedDate(day.dateString)}
@@ -100,11 +129,19 @@ export default function CalendarScreen() {
             <Text className="text-gray-500 italic">No events</Text>
           ) : (
             todaysEvents.map(evt => (
-              <View key={evt.id} className="flex-row justify-between mb-3">
-                <Text className="font-bold">
-                  {formatTime(evt.start)} – {formatTime(evt.end)}
-                </Text>
-                <Text className="font-medium ml-2 flex-1">{evt.title}</Text>
+              <View key={evt.id} className="flex-row items-center justify-between mb-3">
+                <View className="flex-1 pr-2">
+                  <Text className="font-bold">
+                    {formatTime(evt.start)} – {formatTime(evt.end)}
+                  </Text>
+                  <Text className="font-medium">{evt.title}</Text>
+                </View>
+                <TouchableOpacity
+                onPress={() => addEventToCalendar(evt)}
+                className="bg-red-600 px-3 py-1 rounded"
+              >
+                  <Text className="text-white text-sm">Add</Text>
+                </TouchableOpacity>
               </View>
             ))
           )}
